@@ -1,4 +1,7 @@
-﻿namespace Domain.Entities.Softwares;
+﻿using Domain.Entities.Contracts;
+using Domain.Entities.Subscriptions;
+
+namespace Domain.Entities.Softwares;
 
 public class Software
 {
@@ -9,4 +12,6 @@ public class Software
     public string Category { get; set; } = string.Empty;
 
     public ICollection<SoftwareDiscount> SoftwareDiscounts { get; set; } = new List<SoftwareDiscount>();
+    public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+    public ICollection<Subscription>  Subscriptions { get; set; } = new List<Subscription>(); 
 }

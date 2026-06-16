@@ -11,7 +11,8 @@ public class Subscription
     public string Name { get; set; } = string.Empty;
     public int RenewalPeriod { get; set; }
     public decimal PricePerPeriod { get; set; }
-
+    public int StatusId { get; set; }
+    
     public virtual Client Client { get; set; } = null!;
     public virtual Software Software { get; set; } = null!;
     public virtual SubscriptionStatusType SubscriptionStatusType { get; set; } = null!;

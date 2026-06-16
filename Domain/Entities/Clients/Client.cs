@@ -12,4 +12,7 @@ public class Client
 
     public virtual ICollection<Contract> Contracts { get; set; } = [];
     public virtual ICollection<Subscription> Subscriptions { get; set; } = [];
+
+    public virtual CompanyClient CompanyClient { get; set; } = null!;
+    public virtual IndividualClient IndividualClient { get; set; } = null!;
 }
