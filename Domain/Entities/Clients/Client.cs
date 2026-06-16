@@ -1,4 +1,7 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Entities.Contracts;
+using Domain.Entities.Subscriptions;
+
+namespace Domain.Entities.Clients;
 
 public class Client
 {

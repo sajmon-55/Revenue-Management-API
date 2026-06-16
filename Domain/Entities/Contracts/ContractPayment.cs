@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities;
+﻿namespace Domain.Entities.Contracts;
 
 public class ContractPayment
 {

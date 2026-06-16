@@ -1,6 +1,7 @@
-﻿using Domain.Entities.Softwares;
+﻿using Domain.Entities.Clients;
+using Domain.Entities.Softwares;
+namespace Domain.Entities.Contracts;
 
-namespace Domain.Entities;
 
 public class Contract
 {

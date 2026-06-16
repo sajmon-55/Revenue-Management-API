@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities;
+﻿namespace Domain.Entities.Clients;
 
 public class CompanyClient
 {
