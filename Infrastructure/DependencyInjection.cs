@@ -1,7 +1,13 @@
-﻿using Infrastructure.Persistence;
+﻿using System.Text;
+using Infrastructure.Authentication;
+using Infrastructure.Authentication.JWT;
+using Infrastructure.Authentication.Password;
+using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure;
 
@@ -14,9 +20,35 @@ public static class DependencyInjection
             b => b.MigrationsAssembly("Infrastructure")
         ));
         
-        // Tutaj w przyszłości dodamy:
-        // services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
-        // services.AddScoped<DatabaseSeeder>();
+        services.AddScoped<IPasswordService, PasswordService>();
+        services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
+
+        services.AddScoped<DatabaseSeeder>();
+        
+        return services;
+    }
+    
+    public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        var jwtSettings = configuration.GetSection("JWT");
+        services.Configure<JwtOptions>(jwtSettings);
+        var jwtOptions = jwtSettings.Get<JwtOptions>();
+        
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(opt =>
+            {
+                opt.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtOptions.Issuer,
+                    
+                    ValidateAudience = true,
+                    ValidAudience = jwtOptions.Audience,
+                    
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SymmetricSecurityKey))
+                };
+            });
         
         return services;
     }

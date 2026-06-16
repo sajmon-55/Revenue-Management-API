@@ -12,10 +12,10 @@ public class AdminAccountSeeder : IDataSeeder
         if (await dbContext.Users.AnyAsync())
             return;
         
-        var adminLogin = configuration["AdminAccount::Login"];
+        var adminLogin = configuration["AdminAccount:Login"];
         adminLogin ??= "admin";
         
-        var adminPassword = configuration["AdminAccount::Password"];
+        var adminPassword = configuration["AdminAccount:Password"];
         adminPassword ??= "admin";
         
         var passwordHash = new PasswordHasher<object>().HashPassword(null!, adminPassword);
