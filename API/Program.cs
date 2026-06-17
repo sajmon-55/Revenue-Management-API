@@ -1,3 +1,4 @@
+using Application;
 using Infrastructure;
 using Infrastructure.Persistence;
 
@@ -11,6 +12,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddApplication();
 
 var app = builder.Build();
 

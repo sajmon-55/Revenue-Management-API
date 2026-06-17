@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Application.Authentication;
 using Infrastructure.Authentication;
 using Infrastructure.Authentication.JWT;
 using Infrastructure.Authentication.Password;
@@ -25,9 +24,7 @@ public static class DependencyInjection
         services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
 
         services.AddScoped<DatabaseSeeder>();
-
-        services.AddScoped<IAuthService, AuthService>();
-            
+        
         return services;
     }
     
