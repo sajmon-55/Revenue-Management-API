@@ -1,6 +1,139 @@
-@API_HostAddress = http://localhost:5168
+### Zmienne globalne (Zmień port jeśli masz inny)
+@host = http://localhost:5168
+@token = {{login.response.body.$}} 
 
-GET {{API_HostAddress}}/weatherforecast/
-Accept: application/json
+### 1. LOGOWANIE (Pobieranie tokena)
+# @name login
+POST {{host}}/api/Auth/sign-in
+Content-Type: application/json
+
+{
+  "login": "admin",
+  "password": "Password123@"
+}
 
 ###
+@myToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxODU1MDU5Mi01MTBiLTRjYjItYTQyZi0wNjAzYmJmYjk1N2YiLCJ1bmlxdWVfbmFtZSI6ImFkbWluIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNzgxNzI3MDQ5LCJleHAiOjE3ODE3Mjc5NDksImlhdCI6MTc4MTcyNzA0OSwiaXNzIjoiYXBpIiwiYXVkIjoiYXBpIn0.faegPnX8kjWnMYG4xuyn93rHl4MRBt-i8mRiIe6bVwc
+
+
+### 2. TEST AUTORYZACJI
+GET {{host}}/api/User
+Authorization: Bearer {{myToken}}
+
+### 3. DODANIE OPROGRAMOWANIA
+POST {{host}}/api/Software
+Authorization: Bearer {{myToken}}
+Content-Type: application/json
+
+{
+  "name": "System ERP",
+  "description": "System do zarządzania firmą",
+  "currentVersion": "1.0",
+  "category": "Finanse"
+}
+
+### 4. DODANIE KLIENTA
+POST {{host}}/Client/individual
+Authorization: Bearer {{myToken}}
+Content-Type: application/json
+
+{
+  "email": "jan@kowalski.pl",
+  "phone": "123456789",
+  "address": "Warszawa",
+  "firstName": "Jan",
+  "lastName": "Kowalski",
+  "pesel": "90010112345"
+}
+
+### 5. SPRAWDZENIE AKTUALNEGO PRZYCHODU (Zwróci 0)
+GET {{host}}/api/Revenue/current
+Authorization: Bearer {{myToken}}
+
+### 6. STWORZENIE KONTRAKTU
+POST {{host}}/api/Contract/create-contract
+Authorization: Bearer {{myToken}}
+Content-Type: application/json
+
+{
+  "clientId": 1,
+  "softwareId": 1,
+  "softwareVersion": "1.0",
+  "startDate": "2026-07-01",
+  "endDate": "2026-07-15",
+  "price": 10000,
+  "yearsOfSupport": 1
+}
+
+### 7. OPŁACENIE KONTRAKTU
+POST {{host}}/api/Payment
+Authorization: Bearer {{myToken}}
+Content-Type: application/json
+
+{
+  "contractId": 2,
+  "amount": 11000
+}
+
+### 8. PRZYCHÓD PO OPŁACENIU (Zwróci 11000)
+GET {{host}}/api/Revenue/current
+Authorization: Bearer {{myToken}}
+
+### 9. PRZYCHÓD W DOLARACH
+GET {{host}}/api/Revenue/current?currency=USD
+Authorization: Bearer {{myToken}}
+
+### 10. DODANIE KLIENTA FIRMOWEGO (POST)
+# Testujemy dodawanie firmy z numerem KRS
+POST {{host}}/Client/company
+Authorization: Bearer {{myToken}}
+Content-Type: application/json
+
+{
+  "email": "biuro@superkorpo.pl",
+  "phone": "987654321",
+  "address": "Kraków, ul. Biznesowa 1",
+  "name": "Super Korpo Sp. z o.o.",
+  "krs": "0000123456"
+}
+
+### 11. EDYCJA KLIENTA INDYWIDUALNEGO (PUT)
+PUT {{host}}/Client/1
+Authorization: Bearer {{myToken}}
+Content-Type: application/json
+
+{
+  "email": "nowy.jan@kowalski.pl",
+  "phone": "111222333",
+  "address": "Gdańsk, ul. Morska 2",
+  "firstName": "Janusz",
+  "lastName": "Kowalski-Nowak"
+}
+
+### 12. STWORZENIE KONTRAKTU DLA FIRMY (Oczekujący na płatność)
+POST {{host}}/api/Contract/create-contract
+Authorization: Bearer {{myToken}}
+Content-Type: application/json
+
+{
+  "clientId": 2,
+  "softwareId": 1,
+  "softwareVersion": "1.0",
+  "startDate": "2026-07-01",
+  "endDate": "2026-07-15",
+  "price": 20000,
+  "yearsOfSupport": 2
+}
+
+### 13. PRZEWIDYWANY PRZYCHÓD FIRMY (GET)
+# Powinno zwrócić sumę: 11000 (zapłacony kontrakt z kroku 7) + 22000 (oczekujący kontrakt z kroku 12). Razem: 33000!
+GET {{host}}/api/Revenue/predicted
+Authorization: Bearer {{myToken}}
+
+### 14. MIĘKKIE USUNIĘCIE KLIENTA (DELETE)
+DELETE {{host}}/Client/1
+Authorization: Bearer {{myToken}}
+
+### 15. PRÓBA USUNIĘCIA FIRMY (DELETE - OCZEKIWANY BŁĄD 409)
+DELETE {{host}}/Client/2
+Authorization: Bearer {{myToken}}

@@ -59,4 +59,64 @@ public class ClientService(DatabaseContext dbContext) : IClientService
         
         return client.Id;
     }
+
+    public async Task UpdateClientAsync(int id, UpdateClientRequest request, CancellationToken cancellationToken)
+    {
+        var client = await dbContext.Clients
+                         .Include(c => c.IndividualClient)
+                         .Include(c => c.CompanyClient)
+                         .FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
+                     ?? throw new NotFoundException("Client not found");
+
+        client.Email = request.Email;
+        client.Phone = request.Phone;
+        client.Address = request.Address;
+
+        if (client.IndividualClient != null)
+        {
+            if (client.IndividualClient.IsDeleted)
+                throw new ConflictException("Editing deleted client is not allowed!");
+
+            client.IndividualClient.FirstName = request.FirstName ?? client.IndividualClient.FirstName;
+            client.IndividualClient.LastName = request.LastName ?? client.IndividualClient.LastName;
+        }
+        else if (client.CompanyClient != null)
+        {
+            client.CompanyClient.Name = request.CompanyName ?? client.CompanyClient.Name;
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteClientAsync(int id, CancellationToken cancellationToken)
+    {
+        var client = await dbContext.Clients
+                         .Include(c => c.IndividualClient)
+                         .Include(c => c.CompanyClient)
+                         .FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
+                     ?? throw new NotFoundException("Client not found");
+        
+        if (client.CompanyClient != null)
+        {
+            throw new ConflictException("Company data cannot be deleted!");
+        }
+
+        if (client.IndividualClient != null)
+        {
+            if (client.IndividualClient.IsDeleted)
+            {
+                throw new ConflictException("This client is already deleted!");
+            }
+
+            client.Address = "deleted";
+            client.Email = "deleted";
+            client.Phone = "000000000";
+            
+            client.IndividualClient.FirstName = "deleted";
+            client.IndividualClient.LastName = "deleted";
+            client.IndividualClient.IsDeleted = true;
+            
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+    }
 }
