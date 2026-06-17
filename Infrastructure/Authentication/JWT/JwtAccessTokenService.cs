@@ -42,7 +42,7 @@ public class JwtAccessTokenService(IOptions<JwtOptions> options) : IAccessTokenS
 
     public string GenerateRefreshToken()
     {
-        var randomNumber = new byte[96];
+        var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
