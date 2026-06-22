@@ -17,7 +17,7 @@ This system was built to solve this problem by clearly separating **current reve
 * **JWT Security:** Fully secured API using JSON Web Tokens with role-based authorization.
 
 ## Tech Stack
-* **Language:** C# 12
+* **Language:** C#
 * **Framework:** .NET 10 / ASP.NET Core Web API
 * **Database / ORM:** Entity Framework Core (Code-First approach)
 * **Testing:** xUnit, EF Core In-Memory Database
